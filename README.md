@@ -43,10 +43,8 @@ By running the command **npm init -y** we initializa a `Node.js` environment tha
 Then `npm install` which installs dependencies `package-lock.json` file 
 
 
-    *Note: we might run into an error "npm: command not found" when trying to execute the node package manager, this usually happens when *Node.js* and npm aren't installed on your computer*
-
-    To install Node.js, go to <https://nodejs.org/en/download>,
-    may need to close and reopen terminal for changes to take effect.
+**Note: we might run into an error "npm: command not found" when trying to execute the node package manager, this usually happens when *Node.js* and npm aren't installed on your local machine*
+To install Node.js, go to <https://nodejs.org/en/download>, may need to close and reopen terminal for changes to take effect**
 
 
 After successfully installing `Node.js`, we ran the following and initialized our JavaScript runtime environment.
@@ -121,6 +119,7 @@ Embedded in `index.js` code is an importer that imports router objects from the 
 
 ![alt text](img/10..png)
 
+Note that the import path correctly specifies the location of the route files in the api directory. 
 
 
 Using the router with `app.use()` connect it to the route path. 
@@ -155,7 +154,7 @@ We tested the endpoints for our products page by going to the browser and inputi
 
 In our backend api, create a new file, name it `build.yml` this is 
 
-![alt text](img/31..png)
+![alt text](img/21..png)
 
 **Explanation of the script**
 
@@ -167,18 +166,16 @@ Checks out your repository so the workflow can access the code
 
 This installs and configures the specifies Node.js version, in the workflow. We've used Node version 22
 
- <u>Step 3: Installs Dependencies</u>
 
-Installs step uses a shell command (`npm ci`), "CI" means clean install. It installs dependices based on `package-lock.json`
-
-
-<u>Step 4: Cache Node.js dependencies</u>
+<u>Step 3: Cache Node.js dependencies</u>
 
 It caches Node.js dependencies to speed up builds by avoiding repetitive npm install runs.
 It uses GitHub's caching action to store the `~/.npm` folder and creates a unique cache key based on the operating system and the `package-lock.json` file. If an exact match isn't found, it falls back to older cache versions with a partial key.
 This facilitates faster builds, less downloading—more time for coding
 
+ <u>Step 4: Installs Dependencies</u>
 
+Installs step uses a shell command (`npm ci`), "CI" means clean install. It installs dependices based on `package-lock.json`
 
  <u>Step 5: Run test</u>
 
@@ -242,7 +239,7 @@ This It sets up Docker Buildx, an advanced tool for building Docker images.
 <u>Step 8: Log in to DockerHub</u>
 
 The calls the official docker action to log in, supplies DockerHub username and password, that is securly stored as a secret in 
-settings -- Secrets and variables ---- Actions -- Repository Secrets
+githubsettings -- Secrets and variables ---- Actions -- Repository Secrets
 
 ![alt text](img/19..png)
 
@@ -286,67 +283,16 @@ its image is tagged as `my-node-app:latest`
 
 
 
-## Continuous Deployment Workflow Our Backend API
-
-## Setting up Github Workflow 
+## Continuous Deployment Workflow for Our Backend API
 
 
 
 
 
 
-## Frontend Web Application Setup
-
-### Building a React app that connects to backend API
-
-We created a new directory for our frontend "webapp". Here, we installed a React application routing setup and essential libraries needed for our frontend
 
 
-![alt text](img/17..png)
 
-
-![alt text](img/18..png)
-
-
-### Configuring Routing on the frontend
-
-
-Routing on the frontend allows for bookmarkable and shareable URLs, providing easy access to specific pages and seamless navigation between different views within a single-page application (SPA), all without requiring a full browser reload.
-
-Routing is done in the `src` directory, 
-
-We created  components pages `Productlist`, `Login`, and `OrderPage` .
- 
-
-![alt text](img/19..png)
-
-Navigating to the `src` directory, and in `App.js`, we configured routing. 
-
-You can see circled part of the script that `src/pages` "Productlist, Login and OrderPage" are currently configured and then routing is defined.  
-
-**App.js**
-![alt text](img/20..png)
-
-
-the configuration in each `src/pages`contains a function to fetch `products`, `login` and `OrderPage` from our backend api  
-
-
-**ProductList.jsx**
-
-![alt text](img/21..png)
-
-The circled part of the code fetches our product data from our backend /api/products.
-it Parses the response as JSON and updates the `products` state. Logs an error to the console if the fetch fails. 
-
-
-**Login.jsx** contains the code 
-
-![alt text](img/22..png)
-
-
-**OrderPage.jsx** contains the code 
-
-![alt text](img/23..png)
 
 
 
