@@ -4,6 +4,7 @@
   {
     "name": "my-node-app",
     "image": "dara433/my-node-app:latest",
+    "requiresCompatibilities": ["FARGATE"],
     "memory": 512,
     "cpu": 256,
     "essential": true,
