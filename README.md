@@ -14,7 +14,7 @@ Next, we navigated into this directory and created a few more directories listed
 2. `api` for the backend: hosts everything that powers the backend. Routes, Controllers and models
 3. `index.js` is the entry point for our server and jJavaScript production environment, it sets up a working server that listens for requests and delegates handling to the correct routes. It’s the brain of the operation, routing requests to where they’re handled.
 4. `index.test.js`: A dedicated testing environment for our server. With `jest` as our JavaScript testing framework. 
-5. `Dockerfile`: Configuration file used by Docker Hub to build and containerize our application.  
+5. `dockerfile`: Configuration file used by Docker Hub to build and containerize our application.  
 
 
 
@@ -77,11 +77,8 @@ After successfully installing `Node.js`, we ran the following and initialized ou
  
 `index.js` is the entry point for our server, it sets up a working server that listens for requests and delegates handling to the correct routes. It’s the brain of the operation, routing requests to where they’re handled.
 
- and the code; 
 
-![alt text](img/5..png)
-
-Note: *Embedded in the code is an importer that imports router objects from `routes/products`, `routes/Login` and `routes/Orderpage`. Using the router with `app.use()` connects it to the route path* 
+Note: *Embedded in index.js the code is an importer that imports router objects from `routes/products`, `routes/Login` and `routes/Orderpage`. Using the router with `app.use()` connects it to the route path* 
 
 More of this later. 
 
@@ -140,7 +137,7 @@ We tested the endpoints for our products page by going to the browser and inputi
 
 ![alt text](img/11..png)
 
-*Note that we have created our back end with Express server which runs on `localhost:3000`*
+*Note that we have created our back end with Express server which runs on `localhost:3000` by default*
 
 
 
@@ -239,7 +236,7 @@ This It sets up Docker Buildx, an advanced tool for building Docker images.
 <u>Step 8: Log in to DockerHub</u>
 
 The calls the official docker action to log in, supplies DockerHub username and password, that is securly stored as a secret in 
-githubsettings -- Secrets and variables ---- Actions -- Repository Secrets
+github settings -- Secrets and variables ---- Actions -- Repository Secrets
 
 ![alt text](img/19..png)
 
@@ -248,7 +245,7 @@ githubsettings -- Secrets and variables ---- Actions -- Repository Secrets
 
 Here we push docker images to the DockerHub registry - a self contained platform - ensuring the image is ready for deployment whenever and wherever its needed. 
 
-To push a docker image, we need a `Dockerfile`, we created and placed this file in our root repository. 
+To push a docker image, we need a `dockerfile`, we created and placed this file in our root repository. 
 
 ![alt text](img/20..png)
 
@@ -273,15 +270,15 @@ To push a docker image, we need a `Dockerfile`, we created and placed this file 
 
 - We've exposed our app to port 3000, the default express server port our app (index.js) listens to. 
 
-- Finally, runs the `node api/index.js` application when the container starts up
+- Finally, run the `node api/index.js` application when the container starts up
 
 
 
 
-Once `Dockerfile` is created, the rest of the code is executed to build the image, tag it and push to DockerHub account, 
-its image is tagged as `my-node-app:latest`
+Once `dockerfile` is created, the rest of the code is executed to build the image, tag it and push to DockerHub account, 
+, our image name is `node:22-alpine`, our repository name is `my-node-app`, and its tagged as `latest`
 
-
+![alt text](img/22..png)
 
 ## Continuous Deployment Workflow for Our Backend API
 
