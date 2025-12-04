@@ -4,6 +4,7 @@
   "requiresCompatibilities": ["FARGATE"],
   "cpu": "256",
   "memory": "512",
+  "executionRoleArn": "arn:aws:iam::051826724200:role/ecsTaskExecutionRole",
   "containerDefinitions": [
   {
     "name": "my-node-app",
