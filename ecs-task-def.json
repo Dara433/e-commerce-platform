@@ -1,7 +1,7 @@
 "containerDefinitions": [
   {
     "name": "my-node-app",
-    "image": "051826724200.dkr.ecr.us-east-1.amazonaws.com/my-node-app:latest",
+    "image": "dara433/my-node-app:latest",
     "memory": 512,
     "cpu": 256,
     "essential": true,
