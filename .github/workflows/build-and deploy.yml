@@ -54,7 +54,10 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/my-node-app:latest
 
-       # Configure AWS credentials using GitHub Secrets
+      - name: List Docker images
+        run: docker images
+
+      # Configure AWS credentials using GitHub Secrets
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -69,7 +72,7 @@ jobs:
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
           IMAGE_TAG: latest
         run: |
-          docker tag my-node-app:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker tag ${{ secrets.DOCKER_USERNAME }}/my-node-app:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG    
 
        # Deploy to Amazon ECS
