@@ -49,7 +49,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         with:
-          context: .
+          context: ./e-commerce-api
           file: ./dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/my-node-app:latest
