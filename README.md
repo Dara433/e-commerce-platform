@@ -255,7 +255,7 @@ To push a docker image, we need a `dockerfile`, we created and placed this file 
 - Specifies what base image we want to use from Docker. `node:22-alpine` lightweight official Docker image for Node.js version 22. 
 
 
-- We set the working directory to `/app`, where Docker's default container's filesystem is located.
+- We set the working directory as to `/app`(also known as the root directory `.`), where the Docker  container's filesystem will be located.  
 
 
 - The line `COPY package*.json ./` in the Dockerfile instructs Docker to copy any file from the current local directory that matches the pattern `package*.json` - typically `package.json` and `package-lock.json` - into the container’s working directory (/app). 
@@ -266,7 +266,7 @@ To push a docker image, we need a `dockerfile`, we created and placed this file 
 - `npm ci --only=production` excludes packages listed under `devDependencies` in our `package.json`. Installing only what is needed to run the app- not what's needed to develop or test it, hence, it speeds up run time for the production environment. 
  
 
-- We copied the built files from our local `api` directory into the container's `/app/api` directory. 
+- We copied the built files from the root directory `.` into the container's root directory `.`  (*remember we've set the container's root directory as `.app` from WORKDIR*)
 
 - We've exposed our app to port 3000, the default express server port our app (index.js) listens to. 
 

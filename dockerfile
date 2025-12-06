@@ -11,7 +11,7 @@ COPY package*.json ./
 RUN npm ci --only=production
 
 # Copy built files
-COPY api ./api
+COPY . . 
 
 # Expose port if your app listens on one (change if needed)
 EXPOSE 3000
