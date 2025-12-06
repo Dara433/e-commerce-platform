@@ -7,9 +7,9 @@ const app = express();
 app.use(bodyParser.json());
 
 // Import and register routes
-const productRoutes = require('./api/routes/products');
-const loginRoutes = require('./api/routes/Login');
-const orderPageRoutes = require('./api/routes/OrderPage');
+const productRoutes = require('./routes/products');
+const loginRoutes = require('./routes/Login');
+const orderPageRoutes = require('./routes/OrderPage');
 
 app.use('/products', productRoutes);
 app.use('/login', loginRoutes);
