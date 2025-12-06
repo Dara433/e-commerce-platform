@@ -7,8 +7,8 @@
   "executionRoleArn": "arn:aws:iam::051826724200:role/ecsTaskExecutionRole",
   "containerDefinitions": [
   {
-    "name": "my-node-app",
-    "image": "dara433/my-node-app:latest",
+    "name": "my-ecr-node-app",
+    "image": "051826724200.dkr.ecr.us-east-1.amazonaws.com/my-ecr-node-app:latest",
     "essential": true,
     "portMappings": [
       {
@@ -19,7 +19,7 @@
     "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "/ecs/my-node-app",
+          "awslogs-group": "/ecs/my-ecr-node-app",
           "awslogs-region": "us-east-1",
           "awslogs-stream-prefix": "ecs"
         }

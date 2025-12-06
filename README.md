@@ -145,7 +145,7 @@ We tested the endpoints for our products page by going to the browser and inputi
 
  
 
-## Continuous Integration Workflow for Backend API
+## Continuous Integration and Deployment (CI/CD) Workflow for Backend API
 
 ## Setting up Github workflow
 
@@ -211,7 +211,7 @@ To Run test simply use the command `npm test`
 <u>Step 6: Building the application</u>
 
 
-Another shell command (`npm run build`). It tells the Node Package Manager (npm) to execute a script named `build` that's defined in the project's `package.json file`. 
+Another shell command (`npm run build`). It tells the Node Package Manager (npm) to execute a script named `build` that's defined in the project's root directory `package.json file`. 
 
 ![alt text](img/18..png)
 
@@ -263,7 +263,7 @@ To push a docker image, we need a `dockerfile`, we created and placed this file 
     *By isolating this step before installing dependencies with `npm ci`, Docker can cache the result of the installation.
     This means that if these files haven’t changed between builds, Docker will reuse the cached dependency layer—avoiding a fresh install and significantly speeding up the build process*
 
-- `npm ci --only=production` excludes packages listed under `devDependencies` in our `package.json`. Installing only what is needed to run the app- not what's needed to develop or test it, hence, it speeds up run time for the production environment. 
+- `npm ci --only=production` excludes packages listed under `devDependencies` in our `package.json`. Installing only what is needed to run the app- not what's needed to develop or test it, hence, it speeds up run time. 
  
 
 - We copied the built files from the root directory `.` into the container's root directory `.`  (*remember we've set the container's root directory as `.app` from WORKDIR*)
@@ -279,6 +279,75 @@ Once `dockerfile` is created, the rest of the code is executed to build the imag
 , our image name is `node:22-alpine`, our repository name is `my-node-app`, and its tagged as `latest`
 
 ![alt text](img/22..png)
+
+
+
+<u>Step 10: Configure AWS Credentials using Github Secrets</u>
+
+While we are logged in as the root user, we found security credentials by going to the Account ID section, security credentials appear. 
+We created an Access key and Secret access key, as well as the AWS region we are operating in, we stored these credentials in github action repository secrets. This would enable us to securely log into the AWS console. 
+
+![alt text](img/23..png)
+
+<u>Step 11: Tag and push Docker image to Amazon ECR </u>
+
+The Elastic container registry (ECR) on Amazon. although this step isn't necessary, since we have already configure to deploy our image on the docker container. It may be useful to show how to carry out the step, also if we want our image to be available in multiple location and serve different purposes.  
+
+We created a new private repository, and obtained these information 
+
+**ECR_REPOSITORY** : This is same as the repository name: **my-ecr-node-app** 
+
+   ![alt text](img/25..png) 
+
+**ECR_REGISTRY** : found in ECR Repository URL
+
+**ECR_REGISTRY** is part of the repository URL : **051826724200.dkr.ecr.us-east-1.amazonaws.com**
+
+All this is stored in out github repository secrets. 
+
+![alt text](img/24..png)
+
+
+
+<u> Deploy to Amazon ECS </u>
+
+This next step enables us to deploy the container image from ECR to ECS using the appropriate credentials and secrets we have set up for it.
+
+
+In other to deploy, we need to create an amazonn cluster (ECS_CLUSTER) and service (ECS_SERVICE) on the amazon console.
+
+![alt text](img/29..png)
+
+**Note: our task deployment failed, cause we have not pushed our docker image to ECR, this will be done when we push our github workflow**
+
+To set up task-definition-service , we need a **task-definition**.
+
+Our task definition uses this configuration
+- AWS FARGATE 
+- 0.25 vCPU, 0.6GB of memory
+- Host port : Container port is 3000 (notice that we've used the same container port in the docker container)
+- Assigns  *ecsTaskExecutionRole* 
+- And enables CloudWatch log connection
+- We retrieved the container image name and Image URL from the ECR repository.
+
+![alt text](img/28..png)
+
+*Its important to know that our ECS pulls the container image from the ECR in a way that's set up in our task definition*
+
+We've created an `ecs-task-def.json` file in our project workfile that mirrors the  task-definition on our console. This is done just for easier readabiliy. Note that when we deploy our workfile, the configuration in `ecs-task-def.json` file will overwrite any configuration we've set up for task-definitions on the Amazon console.
+
+![alt text](img/26..png)
+
+logConfiguration from our task definition file  enbles us to integrate Cloudwatch for error identification and debugging.
+To setup Cloudwatch, create new log group and set the group name to ecs/my-task-definition-service 
+
+To finish setting our service, we need a VPC,
+our VPC subnet is private and it allows both inbound and outbound traffic on port 3000. 
+
+![alt text](img/27..png)
+
+Finally we enabled cloud watch
+The task-definit
 
 ## Continuous Deployment Workflow for Our Backend API
 
