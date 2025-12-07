@@ -1,4 +1,5 @@
 # .github/workflows/build.yml
+# .github/workflows/build.yml
 name: Build and Deploy to Amazon ECS
 
 on:
@@ -40,24 +41,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Log in to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          file: ./dockerfile
-          push: true
-          tags: my-node-app:${{ github.sha }}
-
-      - name: List Docker images
-        run: docker images
-
-      # Configure AWS credentials using GitHub Secrets
+      # Configure AWS credentials BEFORE any ECR operations
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -65,17 +49,27 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-       # Tag and push Docker image to Amazon ECR 
-      - name: Tag and push Docker image to Amazon ECR
+      # Log in to Amazon ECR so docker/build-push-action can push
+      - name: Log in to Amazon ECR
         env:
           ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
-          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-          IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker tag my-node-app:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG    
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | \
+            docker login --username AWS --password-stdin $ECR_REGISTRY
 
-       # Deploy to Amazon ECS
+      # Build and push Docker image directly to ECR
+      - name: Build and push Docker image to ECR
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: ./dockerfile
+          push: true
+          tags: ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ github.sha }}
+
+      - name: List Docker images
+        run: docker images
+
+      # Deploy to Amazon ECS
       - name: Deploy to Amazon ECS
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
@@ -83,7 +77,6 @@ jobs:
           service: ${{ secrets.ECS_SERVICE }}
           cluster: ${{ secrets.ECS_CLUSTER }}
           wait-for-service-stability: true
-
 
 
 
