@@ -62,7 +62,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          file: ./dockerfile
+          file: ./dockerfile.backend
           push: true
           no-cache: true
           tags: ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:latest

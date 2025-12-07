@@ -167,8 +167,7 @@ This installs and configures the specifies Node.js version, in the workflow. We'
 <u>Step 3: Cache Node.js dependencies</u>
 
 It caches Node.js dependencies to speed up builds by avoiding repetitive npm install runs.
-It uses GitHub's caching action to store the `~/.npm` folder and creates a unique cache key based on the operating system and the `package-lock.json` file. If an exact match isn't found, it falls back to older cache versions with a partial key.
-This facilitates faster builds, less downloading—more time for coding
+
 
  <u>Step 4: Installs Dependencies</u>
 
@@ -211,7 +210,7 @@ To Run test simply use the command `npm test`
 <u>Step 6: Building the application</u>
 
 
-Another shell command (`npm run build`). It tells the Node Package Manager (npm) to execute a script named `build` that's defined in the project's root directory `package.json file`. 
+Another shell command (`npm run build`). It tells the Node Package Manager (npm) to execute a script named `build` that's defined in the project's root directory package.json file. 
 
 ![alt text](img/18..png)
 
@@ -229,36 +228,44 @@ A couple of reason why we have this
 
 <u>Step 7: Set up Docker Buildx</u>
 
-This It sets up Docker Buildx, an advanced tool for building Docker images.
+This sets up Docker Buildx, an advanced tool for building Docker images.
+
+
+<u>Step 8: Configure AWS Credentials BEFORE any ECR operations</u>
+
+While we are logged in as the root user on AWS, we retrieved security credentials by going to the Account ID section.
+We created an Access key and Secret access key, as well as the AWS region we are operating in, we stored these credentials in github action repository secrets. This would enable us to securely log into the AWS console. 
+
+![alt text](img/37..png)
+
+<u>Step 9: Login in to Amazon ECR so docker/build-push action can push </u>
+
+Created the ECR repository on the Amazon console, with the credentials ECR_REPOSITORY and ECR-REGISTRY stored in github secrets 
+![alt text](img/34..png)
+
+
+*A crucial order of step: Its very important to configure the login to AWS and ECR early in the workflow, or before further action, it tells github action that the repository exists, prevents errors / bugs or authorization failure*  
 
 
 
-<u>Step 8: Log in to DockerHub</u>
+### dockerfile
 
-The calls the official docker action to log in, supplies DockerHub username and password, that is securly stored as a secret in 
-github settings -- Secrets and variables ---- Actions -- Repository Secrets
+The containerized application where our file lives remotely
 
-![alt text](img/19..png)
-
-
-<u>Step 9: Build and Push Docker Image</u>
-
-Here we push docker images to the DockerHub registry - a self contained platform - ensuring the image is ready for deployment whenever and wherever its needed. 
-
-To push a docker image, we need a `dockerfile`, we created and placed this file in our root repository. 
-
+To push a docker image, we need a `dockerfile.backend`, we created and placed this file in our root repository.
 ![alt text](img/20..png)
 
+*Note: Its important to place `dockerfile.backend` in the project's root directory, this enables us to establish the root as the build context and gives us the flexibility to copying files from any subdirectory (i.e. api), In otherwords, we reference `dockerfile.backend` as the parent directory,and `api` and subfolders ans the sub directories*
 
 <u>Dockerfile: script Explanation</u>
 
 - Specifies what base image we want to use from Docker. `node:22-alpine` lightweight official Docker image for Node.js version 22. 
 
 
-- We set the working directory as to `/app`(also known as the root directory `.`), where the Docker  container's filesystem will be located.  
+- We set the working directory as to `/app`(also known as the root directory `.`), where the Docker container's filesystem will be located.  
 
 
-- The line `COPY package*.json ./` in the Dockerfile instructs Docker to copy any file from the current local directory that matches the pattern `package*.json` - typically `package.json` and `package-lock.json` - into the container’s working directory (/app). 
+- The line `COPY package*.json ./` instructs Docker to copy any file from the current local directory that matches the pattern `package*.json` - typically `package.json` and `package-lock.json` - into the container’s working directory (/app). 
 
     *By isolating this step before installing dependencies with `npm ci`, Docker can cache the result of the installation.
     This means that if these files haven’t changed between builds, Docker will reuse the cached dependency layer—avoiding a fresh install and significantly speeding up the build process*
@@ -266,7 +273,7 @@ To push a docker image, we need a `dockerfile`, we created and placed this file 
 - `npm ci --only=production` excludes packages listed under `devDependencies` in our `package.json`. Installing only what is needed to run the app- not what's needed to develop or test it, hence, it speeds up run time. 
  
 
-- We copied the built files from the root directory `.` into the container's root directory `.`  (*remember we've set the container's root directory as `.app` from WORKDIR*)
+- We copied the built files from the `api` into the container's root directory `.`  (*remember we've set the container's root directory as `.app` from WORKDIR*)
 
 - We've exposed our app to port 3000, the default express server port our app (index.js) listens to. 
 
@@ -275,33 +282,30 @@ To push a docker image, we need a `dockerfile`, we created and placed this file 
 
 
 
-Once `dockerfile` is created, the rest of the code is executed to build the image, tag it and push to DockerHub account, 
-, our image name is `node:22-alpine`, our repository name is `my-node-app`, and its tagged as `latest`
+<u>Step 10: Build and push Docker image directly to ECR</u>
 
-![alt text](img/22..png)
+This GitHub Actions workflow step handles the containerization and deployment of your e-commerce API to Amazon's Elastic Container Registry (ECR). It uses the official docker/build-push-action@v3 action, which is a specialized tool designed to streamline Docker image builds in CI/CD pipelines.
+
+- `context .` tells Docker to use the current repository root as the build context. 
+
+- file : `./dockerfile.backend` explicity specifies which Dockerfile use
+
+- `push:true`: instructs the action to images to the ECR after successful build
+
+- `no-cache:true`: option forces Docker to rebuild every layer from scratch without using cached layers from previous builds. While this increases build time, it ensures you're getting a completely fresh build, which can be valuable for catching dependency issues or ensuring the latest security patches are applied.
+
+- `tags`: Constructs the full image using Github secrets. It comobines {{ secrets.ECR_REGISTRY }} (your AWS ECR registry) URL,  with {{ secrets.ECR_REPOSITORY }} (your specific repository name,  and tags it as latest 
 
 
 
-<u>Step 10: Configure AWS Credentials using Github Secrets</u>
 
-While we are logged in as the root user, we found security credentials by going to the Account ID section, security credentials appear. 
-We created an Access key and Secret access key, as well as the AWS region we are operating in, we stored these credentials in github action repository secrets. This would enable us to securely log into the AWS console. 
-
-![alt text](img/23..png)
-
-<u>Step 11: Tag and push Docker image to Amazon ECR </u>
-
-The Elastic container registry (ECR) on Amazon. although this step isn't necessary, since we have already configure to deploy our image on the docker container. It may be useful to show how to carry out the step, also if we want our image to be available in multiple location and serve different purposes.  
-
-We created a new private repository, and obtained these information 
+We created a new private repository on the amazon console and obtained these information 
 
 **ECR_REPOSITORY** : This is same as the repository name: **my-ecr-node-app** 
 
    ![alt text](img/25..png) 
 
-**ECR_REGISTRY** : found in ECR Repository URL
-
-**ECR_REGISTRY** is part of the repository URL : **051826724200.dkr.ecr.us-east-1.amazonaws.com**
+**ECR_REGISTRY** found in ECR Repository URL. The ECR_REGISTRY is part of the repository URL : **051826724200.dkr.ecr.us-east-1.amazonaws.com**
 
 All this is stored in out github repository secrets. 
 
@@ -314,40 +318,56 @@ All this is stored in out github repository secrets.
 This next step enables us to deploy the container image from ECR to ECS using the appropriate credentials and secrets we have set up for it.
 
 
-In other to deploy, we need to create an amazonn cluster (ECS_CLUSTER) and service (ECS_SERVICE) on the amazon console.
+In other to deploy to ECS, we need to create a cluster (ECS_CLUSTER) and Cluster service (ECS_SERVICE) on the amazon console.
 
 ![alt text](img/29..png)
 
-**Note: our task deployment failed, cause we have not pushed our docker image to ECR, this will be done when we push our github workflow**
+**Note: the task deployment failed, cause we have not pushed our docker image to ECR, this will change whenever we trigger our github workflow**
 
-To set up task-definition-service , we need a **task-definition**.
+To set up our cluster service , we need a **task-definition** (aka my-task-definition-service)
 
-Our task definition uses this configuration
+![alt text](img/31..png)
+
+### Task Definition Configuration
+
+Our task definition uses this configuration; 
+
 - AWS FARGATE 
 - 0.25 vCPU, 0.6GB of memory
-- Host port : Container port is 3000 (notice that we've used the same container port in the docker container)
+- Host port : Container port is 3000 (*notice that we've used the same container port in the docker container*)
 - Assigns  *ecsTaskExecutionRole* 
-- And enables CloudWatch log connection
-- We retrieved the container image name and Image URL from the ECR repository.
+- Enables CloudWatch log connection
+
+
+For our task definition service, we used ECR container image and image URL
+
 
 ![alt text](img/28..png)
 
-*Its important to know that our ECS pulls the container image from the ECR in a way that's set up in our task definition*
+ **ECS pulls the container image from the ECR in a way that's set up in our task definition**
 
-We've created an `ecs-task-def.json` file in our project workfile that mirrors the  task-definition on our console. This is done just for easier readabiliy. Note that when we deploy our workfile, the configuration in `ecs-task-def.json` file will overwrite any configuration we've set up for task-definitions on the Amazon console.
+#### ecs-task-def.json
+
+We've created an `ecs-task-def.json` file in our project workfile that mirrors the  task-definition on our console. This is done just for easier readabiliy. Note that when we deploy our workfile, the configuration in `ecs-task-def.json` file will overwrite any configuration we've set up for task-definition on the Amazon console.
 
 ![alt text](img/26..png)
 
-logConfiguration from our task definition file  enbles us to integrate Cloudwatch for error identification and debugging.
-To setup Cloudwatch, create new log group and set the group name to ecs/my-task-definition-service 
+Similar to the task definition on our console, our container definition pulls from the ECR image 
 
-To finish setting our service, we need a VPC,
+logConfiguration from our task definition file  enables us to integrate Cloudwatch 
+To setup Cloudwatch, create new log group and set the group name to ecs/my-ecr-node-app
+
+Then navigate to Cloud watch- Log Management and set a log group with the same exact name - /ecs/my-ecr-node-app
+
+CloudWatch enables advanaced infrastructure monitoring of our container, as well as error identification and debugging.
+
+![alt text](img/32..png)
+
+To finish setting our Cluster service, we need a VPC,
 our VPC subnet is private and it allows both inbound and outbound traffic on port 3000. 
 
 ![alt text](img/27..png)
 
-Finally we enabled cloud watch
-The task-definit
 
 ## Continuous Deployment Workflow for Our Backend API
 

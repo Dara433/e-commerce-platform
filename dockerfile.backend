@@ -11,10 +11,12 @@ COPY package*.json ./
 RUN npm ci --only=production
 
 # Copy built files
-COPY . . 
+COPY api . 
 
 # Expose port if your app listens on one (change if needed)
 EXPOSE 3000
 
 # Start the application
-CMD ["node", "api/index.js"]
+CMD ["node", "index.js"]
+
+
