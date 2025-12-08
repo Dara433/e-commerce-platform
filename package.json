@@ -150,7 +150,6 @@
     "istanbul-lib-source-maps": "^5.0.6",
     "istanbul-reports": "^3.1.7",
     "jackspeak": "^3.4.3",
-    "jest": "^30.0.4",
     "jest-changed-files": "^30.0.2",
     "jest-circus": "^30.0.4",
     "jest-cli": "^30.0.4",
@@ -276,7 +275,6 @@
     "strip-final-newline": "^2.0.0",
     "strip-json-comments": "^3.1.1",
     "superagent": "^8.1.2",
-    "supertest": "^6.3.4",
     "supports-color": "^7.2.0",
     "supports-preserve-symlinks-flag": "^1.0.0",
     "synckit": "^0.11.8",
@@ -314,9 +312,12 @@
     "yargs-parser": "^21.1.1",
     "yocto-queue": "^0.1.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "jest": "^30.2.0",
+    "supertest": "^7.1.4"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
