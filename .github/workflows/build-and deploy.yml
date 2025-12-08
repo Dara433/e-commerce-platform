@@ -21,11 +21,11 @@ jobs:
         with:
           node-version: '20.x'
 
-      - name: Cache Node.js dependencies
+      - name: Cache Node.js dependencies in the api directory
         uses: actions/cache@v3
         with:
-          path: ${{ runner.home }}/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          path: api/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('api/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
