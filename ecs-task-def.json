@@ -2,26 +2,47 @@
   "family": "my-task-definition",
   "networkMode": "awsvpc",
   "requiresCompatibilities": ["FARGATE"],
-  "cpu": "256",
-  "memory": "512",
+  "cpu": "512",
+  "memory": "1024",
   "executionRoleArn": "arn:aws:iam::051826724200:role/ecsTaskExecutionRole",
   "containerDefinitions": [
-  {
-    "name": "my-ecr-node-app",
-    "image": "051826724200.dkr.ecr.us-east-1.amazonaws.com/my-ecr-node-app:latest",
-    "essential": true,
-    "portMappings": [
-      {
-        "containerPort": 3000,
-        "hostPort": 3000
-      }
-    ],
-    "logConfiguration": {
+    {
+      "name": "frontend",
+      "image": "051826724200.dkr.ecr.us-east-1.amazonaws.com/my-ecr-frontend:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 80,
+          "hostPort": 80,
+          "protocol": "tcp"
+        }
+      ],
+      "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "/ecs/my-ecr-node-app",
+          "awslogs-group": "/ecs/my-ecr-frontend",
           "awslogs-region": "us-east-1",
-          "awslogs-stream-prefix": "ecs"
+          "awslogs-stream-prefix": "frontend"
+        }
+      }
+    },
+    {
+      "name": "backend",
+      "image": "051826724200.dkr.ecr.us-east-1.amazonaws.com/my-ecr-backend:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "hostPort": 3000,
+          "protocol": "tcp"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/my-ecr-backend",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "backend"
         }
       }
     }

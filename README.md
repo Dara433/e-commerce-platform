@@ -1,37 +1,35 @@
 # Automating-Pipeline-for-an-E-commerce-Platform-Using-Github-Actions
 
-We created a new git remote repository and named it as `e-commerce-platform. 
-Next we created a new directory on our terminal, name it `e-commerce-api`  
-
-
-
-
- ## Backend API Project Setup
-
-Next, we navigated into this directory and created a few more directories listed below
-
-1. `.github/workflows` - This directory will store our workflows files ( **YAML** configuration files ) for Continuous Integration with our Git repository 
-2. `api` for the backend: hosts everything that powers the backend. Routes, Controllers and models
-3. `index.js` is the entry point for our server and jJavaScript production environment, it sets up a working server that listens for requests and delegates handling to the correct routes. It’s the brain of the operation, routing requests to where they’re handled.
-4. `index.test.js`: A dedicated testing environment for our server. With `jest` as our JavaScript testing framework. 
-5. `dockerfile`: Configuration file used by Docker Hub to build and containerize our application.  
-
-
+## Objective 
 
 
 
 ## Initializing Github Actions
 
- We navigated to `e-commerce-api` directory and initilized it as a git repository. This shows up as a hidden `.git` directory in the current folder. Initializing git enables git to track and monitor changes in this folder. 
+We created a new git remote repository and named it as `e-commerce-platform`. 
+Next we cloned this repository on our terminal using the `git clone` command 
+
+ We navigated to `e-commerce-platform` directory and initilized it as a git repository. This shows up as a hidden `.github` directory in the current folder.
+  Initializing git enables git to track and monitor changes in this folder. 
 
 ![alt text](img/2..png)
 
+
+
+ ## Backend API Project Setup
+
+Next, we navigated into the `e-commerce-platform` directory and created a few more directories listed below
+
+1. `.github/workflows` - This directory will store our workflows files (**YAML** configuration files) for Continuous Integration with our Git repository 
+2. `api` for the backend: hosts everything that powers the backend. Routes, Controllers and models
 
 
 
 ## Backend API Setup and Installing Dependencies
 
 To setup the backend, there is a series of application / packages we need need to install, JavaScript being one of them, it allows us to interact with our backend servers.
+
+First we make a directory for our backend named as `api`
 
 To get JavaScript running in our backend `api` directory, we need to create the `Node.js` environment - a runtime environment that lets us run JavaScript code.
 
@@ -46,10 +44,6 @@ Then `npm install` which installs dependencies `package-lock.json` file
 **Note: we might run into an error "npm: command not found" when trying to execute the node package manager, this usually happens when *Node.js* and npm aren't installed on your local machine*
 To install Node.js, go to <https://nodejs.org/en/download>, may need to close and reopen terminal for changes to take effect**
 
-
-After successfully installing `Node.js`, we ran the following and initialized our JavaScript runtime environment.
-
-![alt text](img/1..png)
 
  <u>Installing Dependencies</u>
 
@@ -72,15 +66,16 @@ After successfully installing `Node.js`, we ran the following and initialized ou
 
  The following file was manually created in our `api`
 
-![alt text](img/6..png)
 
- 
-`index.js` is the entry point for our server, it sets up a working server that listens for requests and delegates handling to the correct routes. It’s the brain of the operation, routing requests to where they’re handled.
+
+1. `index.js` is the entry point for our server and JavaScript production environment, it sets up a working server that listens for requests and delegates handling to the correct routes. It’s the brain of the operation, routing requests to where they’re handled.
+
+2. `index.test.js`: A dedicated testing environment for our server. With jest as our JavaScript testing framework.
 
 
 Note: *Embedded in index.js the code is an importer that imports router objects from `routes/products`, `routes/Login` and `routes/Orderpage`. Using the router with `app.use()` connects it to the route path* 
 
-More of this later. 
+*More of this later*. 
 
 
 **Other Core API directories** 
@@ -137,47 +132,10 @@ We tested the endpoints for our products page by going to the browser and inputi
 
 ![alt text](img/11..png)
 
-*Note that we have created our back end with Express server which runs on `localhost:3000` by default*
+*Note: the backend Express server runs on `localhost:3000` by default*
 
-
-
-
-
- 
-
-## Continuous Integration and Deployment (CI/CD) Workflow for Backend API
-
-## Setting up Github workflow
-
-In our backend api, create a new file, name it `build.yml` this is 
-
-![alt text](img/21..png)
-
-**Explanation of the script**
-
- <u>Step1: Checkout Action</u>
-
-Checks out your repository so the workflow can access the code
-
- <u>Step 2: Set up Node.js</u>
-
-This installs and configures the specifies Node.js version, in the workflow. We've used Node version 22
-
-
-<u>Step 3: Cache Node.js dependencies</u>
-
-It caches Node.js dependencies to speed up builds by avoiding repetitive npm install runs.
-
-
- <u>Step 4: Installs Dependencies</u>
-
-Installs step uses a shell command (`npm ci`), "CI" means clean install. It installs dependices based on `package-lock.json`
-
- <u>Step 5: Run test</u>
-
-Also a shell command (`npm test`). This executes the test suite.
-
-Note that to run a test, a separate test file must be created named as `index.test.js`. And our `package.json` needs to define the test script.
+### Backend API setup (test files) 
+**index.test.js**
 
 ![alt text](img/13..png)
 
@@ -204,6 +162,49 @@ To Run test simply use the command `npm test`
 
 *Note that all routes `Login.js`, `OrdePage.js`, `products.js` must contain code to respond to `GET` request, otherwise an error would occur* 
 
+
+# Frontend
+
+For the frontend and installed a simple react app and named it as **webapp** using the command below
+
+![alt text](img/38..png)
+ 
+This installs the all the required configuration files and dependeny in our webapp directory. 
+
+
+## Continuous Integration and Deployment (CI/CD) Workflow for Backend API
+
+## Setting up Github workflow
+
+In our backend api, create a new file, name it `build-and deploy.yml` this is 
+
+![alt text](img/21..png)
+
+**Explanation of the script**
+
+ <u>Step1: Checkout Action</u>
+
+Checks out your repository so the workflow can access the code
+
+ <u>Step 2: Set up Node.js</u>
+
+This installs and configures the specifies Node.js version, in the workflow. We've used Node version 22
+
+
+<u>Step 3: Cache Node.js dependencies in the api directory</u>
+
+It caches Node.js dependencies to speed up builds by avoiding repetitive npm install runs.
+
+
+ <u>Step 4: Installs Dependencies</u>
+
+Installs step uses a shell command (`npm ci`), "CI" means clean install. It installs dependices based on `package-lock.json`
+
+ <u>Step 5: Run test</u>
+
+Also a shell command (`npm test`). This executes the test suite.
+
+Note that to run a test, a separate test file must be created named as `index.test.js`. And our `package.json` has already been defined the test script from above.
 
 
 
