@@ -37,9 +37,8 @@ To get JavaScript running in our backend `api` directory, we need to create the 
 
 To start a JavaScript runtime environment, `npm` - Node package manager is required. It helps to create a new `package.json` file, which sets up the project's dependencies, scripts, metadata and versioning that is essential for installing packages and deploying apps.
 
-By running the command **npm init -y** we initialized a **Node.js** environment that is essential for JavaScript, this command automatically creates the `package.json` file, (the command has no dependency in it)
+By running the command **npm init -y** we initialized a **Node.js** environment that is essential for JavaScript, this command automatically creates the `package.json` file, (this command has no dependency, and does not install dependencies)
 
-Then **npm install** : creates the package-lock.json file, installs dependencies listed in `package-json` file 
 
 
 **Note: we might run into an error "npm: command not found" when trying to execute the node package manager, this usually happens when *Node.js* and npm aren't installed on your local machine*
@@ -53,14 +52,16 @@ To install Node.js, go to <https://nodejs.org/en/download>, may need to close an
 
 **Express** : a minimal and flexible web framework application for Node.js that creates our server, it defines and handles routing, and handles middleware for parsing data, authentication and more.  Run this command to add express package to package.json dependencies.  
 
+
 ![alt text](img/3..png)
 
+`npm install express` : Installs dependencies by Express to the package.json dependencies  and installs it into node_modules. 
 
  **body-parser** (optional) : helps process JSON requeest bodies, making it easier to handle form submissions or API request
 
 ![alt text](img/4..png)
 
-
+Run **npm install** : creates the package-lock.json file, installs dependencies listed in `package-json` file 
 
 
 ## Backend API setup - continuation
